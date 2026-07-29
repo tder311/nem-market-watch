@@ -1,0 +1,227 @@
+.bid-container {
+  padding: 24px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100%;
+  background: var(--bg);
+  overflow-y: auto;
+}
+
+.bid-header {
+  margin-bottom: 20px;
+}
+
+.bid-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-1);
+  margin: 0 0 8px 0;
+}
+
+.bid-subtitle {
+  color: var(--text-2);
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* Controls row */
+.bid-controls {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  align-items: flex-start;
+}
+
+/* DUID search */
+.duid-search-wrapper {
+  position: relative;
+  flex: 1;
+  max-width: 400px;
+}
+
+.duid-search-input {
+  width: 100%;
+  background: var(--inset);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text-1);
+  font: 0.85rem var(--font-ui);
+  padding: 0.45rem 0.6rem;
+  outline: none;
+  transition: border-color var(--transition-fast);
+  box-sizing: border-box;
+}
+
+.duid-search-input:focus {
+  border-color: var(--accent);
+}
+
+.duid-search-input::placeholder {
+  color: var(--text-3);
+}
+
+.duid-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  margin-top: 4px;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: var(--shadow-2);
+}
+
+.duid-option {
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  border-bottom: 1px solid var(--border);
+}
+
+.duid-option:last-child {
+  border-bottom: none;
+}
+
+.duid-option:hover {
+  background: var(--accent-soft);
+}
+
+.duid-option-status {
+  text-align: center;
+  color: var(--text-3);
+}
+
+.duid-option-name {
+  font-weight: 600;
+  color: var(--text-1);
+  font-size: 0.95rem;
+}
+
+.duid-option-detail {
+  font-size: 0.8rem;
+  color: var(--text-2);
+  margin-top: 2px;
+}
+
+/* Date picker */
+.bid-date-picker {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.bid-date-picker label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+.bid-date-input {
+  background: var(--inset);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text-1);
+  font: 0.85rem var(--font-ui);
+  padding: 0.45rem 0.6rem;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.bid-date-input:focus {
+  border-color: var(--accent);
+}
+
+/* Generator info card */
+.generator-info-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+  padding: 1rem 1.25rem;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.gen-info-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.gen-info-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.gen-info-value {
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+/* Chart section */
+.bid-chart-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+  padding: 1rem 1.25rem;
+  margin-bottom: 20px;
+}
+
+.bid-chart-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-1);
+  margin: 0 0 16px 0;
+}
+
+/* Loading and empty states */
+.bid-loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-2);
+}
+
+.bid-empty {
+  text-align: center;
+  padding: 60px 20px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  color: var(--text-3);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .bid-container {
+    padding: 16px;
+  }
+
+  .bid-controls {
+    flex-direction: column;
+  }
+
+  .duid-search-wrapper {
+    max-width: 100%;
+  }
+
+  .generator-info-card {
+    gap: 16px;
+  }
+}

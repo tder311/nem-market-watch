@@ -1,0 +1,232 @@
+.pasa-container {
+  padding: 20px;
+  height: 100%;
+  overflow-y: auto;
+  background: var(--bg);
+}
+
+.pasa-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.back-button {
+  padding: 10px 20px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-2);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.back-button:hover {
+  border-color: var(--accent);
+  color: var(--text-1);
+}
+
+.pasa-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  flex-grow: 1;
+  color: var(--text-1);
+}
+
+.pasa-container .last-updated {
+  position: static;
+  font-size: 0.9rem;
+  color: var(--text-2);
+  background: var(--elevated);
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+}
+
+/* Tab navigation */
+.pasa-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.pasa-tab {
+  padding: 12px 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-2);
+  font-family: var(--font-ui);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.pasa-tab:hover {
+  background: var(--accent-soft);
+  color: var(--text-1);
+}
+
+.pasa-tab.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--text-1);
+}
+
+/* Summary cards */
+.pasa-summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.pasa-summary-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+  padding: 1rem 1.25rem;
+  text-align: center;
+  transition: transform var(--transition-fast);
+}
+
+.pasa-summary-card:hover {
+  transform: translateY(-2px);
+}
+
+/* LOR-specific card styling */
+.pasa-summary-card.lor-0 {
+  border-left: 4px solid var(--ok);
+}
+
+.pasa-summary-card.lor-1 {
+  border-left: 4px solid var(--warn);
+  background: var(--warn-soft);
+}
+
+.pasa-summary-card.lor-2 {
+  border-left: 4px solid var(--danger);
+  background: var(--danger-soft);
+}
+
+.pasa-summary-card.lor-3 {
+  border-left: 4px solid #8b1e28;
+  background: rgba(139, 30, 40, 0.12);
+}
+
+.card-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 8px;
+}
+
+.card-value {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.card-value.small {
+  font-size: 1rem;
+}
+
+.card-unit {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--text-3);
+  margin-left: 4px;
+}
+
+/* Chart wrapper */
+.pasa-section {
+  margin-bottom: 24px;
+}
+
+.chart-wrapper {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+  padding: 1rem 1.25rem;
+  transition: box-shadow var(--transition-fast);
+  margin-bottom: 16px;
+}
+
+.chart-wrapper:hover {
+  box-shadow: var(--shadow-2);
+}
+
+/* Hide Plotly modebar by default, show on hover */
+.chart-wrapper .modebar {
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.chart-wrapper:hover .modebar {
+  opacity: 1;
+}
+
+.chart-wrapper .modebar-btn {
+  fill: var(--text-2) !important;
+}
+
+.chart-wrapper .modebar-btn:hover {
+  fill: var(--text-1) !important;
+}
+
+/* No data message */
+.no-data-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  text-align: center;
+  padding: 40px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  color: var(--text-2);
+}
+
+.no-data-message p {
+  margin: 8px 0;
+  font-size: 0.95rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .pasa-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pasa-title {
+    font-size: 1.5rem;
+  }
+
+  .pasa-tabs {
+    flex-wrap: wrap;
+  }
+
+  .pasa-tab {
+    flex: 1;
+    min-width: 140px;
+  }
+
+  .pasa-summary-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

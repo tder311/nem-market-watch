@@ -1,0 +1,191 @@
+// @ts-check
+const { test, expect } = require('@playwright/test');
+
+test.describe('State Detail Page', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+    await expect(page.getByText(/Loading market data/i)).not.toBeVisible({ timeout: 15000 });
+    // Navigate to NSW state detail
+    await page.locator('.sidebar-region-card').filter({ hasText: 'NSW' }).click();
+    // Wait for state detail to load
+    await expect(page.getByText(/Loading New South Wales data/i)).not.toBeVisible({ timeout: 15000 });
+  });
+
+  test.skip('displays state name and code', async ({ page }) => {
+    await expect(page.getByText('New South Wales (NSW)')).toBeVisible();
+  });
+
+  test.skip('displays back button', async ({ page }) => {
+    await expect(page.getByText('Back to Overview')).toBeVisible();
+  });
+
+  test.skip('displays Last Updated timestamp', async ({ page }) => {
+    await expect(page.getByText(/Last Updated/i)).toBeVisible();
+  });
+
+  test.skip('displays summary cards', async ({ page }) => {
+    await expect(page.getByText('Current Price')).toBeVisible();
+    await expect(page.getByText('Total Demand')).toBeVisible();
+    await expect(page.getByText('Total Generation')).toBeVisible();
+    await expect(page.getByText('Active Generators')).toBeVisible();
+  });
+
+  test.skip('displays time range selector', async ({ page }) => {
+    // Check for the time range selector container and label text
+    await expect(page.locator('.time-range-selector')).toBeVisible();
+    await expect(page.getByText('Time Range:')).toBeVisible();
+
+    const select = page.getByRole('combobox');
+    await expect(select).toHaveValue('24');
+  });
+
+  test.skip('time range selector has all options', async ({ page }) => {
+    const select = page.getByRole('combobox');
+
+    await expect(select.locator('option[value="6"]')).toHaveText('6 Hours');
+    await expect(select.locator('option[value="12"]')).toHaveText('12 Hours');
+    await expect(select.locator('option[value="24"]')).toHaveText('24 Hours');
+    await expect(select.locator('option[value="48"]')).toHaveText('48 Hours');
+    await expect(select.locator('option[value="168"]')).toHaveText('7 Days');
+  });
+
+  test('changing date range updates chart', async ({ page }) => {
+    let lastStartDate = '';
+
+    // Monitor API calls
+    await page.route('**/api/region/NSW/prices/history**', async route => {
+      const url = new URL(route.request().url());
+      lastStartDate = url.searchParams.get('start_date') || '';
+      await route.continue();
+    });
+
+    // Change start month to June using the specific dropdown
+    await page.getByLabel('start month').selectOption('6');
+
+    // Wait for the debounced API call (500ms debounce + extra buffer)
+    await page.waitForTimeout(1000);
+
+    // API should be called with start_date containing the new month (06)
+    expect(lastStartDate).toContain('-06-');
+  });
+
+  test.skip('displays price history chart', async ({ page }) => {
+    await expect(page.locator('.price-chart')).toBeVisible();
+  });
+
+  test.skip('displays fuel mix chart', async ({ page }) => {
+    await expect(page.locator('.fuel-chart')).toBeVisible();
+  });
+
+  test.skip('displays generation history chart', async ({ page }) => {
+    await expect(page.getByText(/Generation by Fuel Source/)).toBeVisible();
+    await expect(page.locator('.generation-history-chart')).toBeVisible();
+  });
+
+  test.skip('displays three charts on state detail page', async ({ page }) => {
+    // Price/demand chart, fuel mix donut, and generation history stacked area
+    // Use the chart wrapper classes instead of data-testid since Plotly doesn't add those
+    await expect(page.locator('.price-chart')).toBeVisible();
+    await expect(page.locator('.fuel-chart')).toBeVisible();
+    await expect(page.locator('.generation-history-chart')).toBeVisible();
+  });
+
+  test('back button navigates to overview', async ({ page }) => {
+    await page.getByText('Back to Overview').click();
+
+    await expect(page.locator('.sidebar-region-card')).toHaveCount(5);
+    await expect(page.getByText('New South Wales (NSW)')).not.toBeVisible();
+  });
+});
+
+test.describe.skip('State Detail Page - All Regions', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+    await expect(page.getByText(/Loading market data/i)).not.toBeVisible({ timeout: 15000 });
+  });
+
+  const regions = [
+    { code: 'NSW', name: 'New South Wales' },
+    { code: 'VIC', name: 'Victoria' },
+    { code: 'QLD', name: 'Queensland' },
+    { code: 'SA', name: 'South Australia' },
+    { code: 'TAS', name: 'Tasmania' },
+  ];
+
+  for (const region of regions) {
+    test(`${region.name} detail page loads correctly`, async ({ page }) => {
+      await page.locator('.sidebar-region-card').filter({ hasText: region.code }).click();
+
+      await expect(page.getByText(`${region.name} (${region.code})`)).toBeVisible({ timeout: 15000 });
+      await expect(page.getByText('Current Price')).toBeVisible();
+      await expect(page.getByText(/Generation by Fuel Source/)).toBeVisible();
+    });
+  }
+});
+
+test.describe.skip('State Detail Page - Dark Mode', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+    await expect(page.getByText(/Loading market data/i)).not.toBeVisible({ timeout: 15000 });
+  });
+
+  test('dark mode applies to state detail container', async ({ page }) => {
+    // Enable dark mode first
+    await page.locator('.toggle-switch').click();
+    await expect(page.locator('.app')).toHaveClass(/dark/);
+
+    // Navigate to state detail
+    await page.locator('.sidebar-region-card').filter({ hasText: 'NSW' }).click();
+    await expect(page.getByText(/Loading New South Wales data/i)).not.toBeVisible({ timeout: 15000 });
+
+    await expect(page.locator('.state-detail-container')).toHaveClass(/dark/);
+  });
+});
+
+test.describe.skip('State Detail Page - Data Refresh', () => {
+  test('auto-refreshes every 60 seconds', async ({ page }) => {
+    // This test needs longer timeout since it waits for auto-refresh
+    test.setTimeout(90000);
+
+    let requestCount = 0;
+
+    await page.route('**/api/region/NSW/**', async route => {
+      requestCount++;
+      await route.continue();
+    });
+
+    await page.goto('/');
+    await expect(page.getByText(/Loading market data/i)).not.toBeVisible({ timeout: 15000 });
+
+    await page.locator('.sidebar-region-card').filter({ hasText: 'NSW' }).click();
+    await expect(page.getByText(/Loading New South Wales data/i)).not.toBeVisible({ timeout: 15000 });
+
+    const initialCount = requestCount;
+
+    // Wait for refresh interval (60 seconds) + buffer
+    await page.waitForTimeout(62000);
+
+    expect(requestCount).toBeGreaterThan(initialCount);
+  });
+});
+
+test.describe('State Detail Page - Error Handling', () => {
+  test('handles API errors gracefully', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.getByText(/Loading market data/i)).not.toBeVisible({ timeout: 15000 });
+
+    // Mock errors for state detail APIs
+    await page.route('**/api/region/NSW/**', route => {
+      route.fulfill({
+        status: 500,
+        body: JSON.stringify({ error: 'Internal server error' })
+      });
+    });
+
+    await page.locator('.sidebar-region-card').filter({ hasText: 'NSW' }).click();
+
+    // Should still render with fallback data
+    await expect(page.getByText('New South Wales (NSW)')).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText('$0.00')).toBeVisible();
+  });
+});
