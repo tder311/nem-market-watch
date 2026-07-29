@@ -725,7 +725,7 @@ class NEMDatabase:
         Returns:
             Dictionary with table statistics and detected gaps
         """
-        tables = ['dispatch_data', 'price_data', 'generator_info', 'daily_metrics', 'price_setter_data']
+        tables = ['dispatch_data', 'price_data', 'generator_info', 'daily_metrics', 'price_setter_data', 'bid_day_offer']
         table_stats = []
         gaps_by_table = []
 
@@ -772,6 +772,23 @@ class NEMDatabase:
                                COUNT(DISTINCT metric_date) as days_with_data,
                                COUNT(DISTINCT region) as region_count
                         FROM daily_metrics
+                    """)
+                    table_stats.append({
+                        'table': table,
+                        'total_records': row['total_records'] or 0,
+                        'earliest_date': str(row['earliest_date']) if row['earliest_date'] else None,
+                        'latest_date': str(row['latest_date']) if row['latest_date'] else None,
+                        'days_with_data': row['days_with_data'] or 0,
+                        'expected_interval': None
+                    })
+                elif table == 'bid_day_offer':
+                    # Daily bid files - one bid_day_offer batch per ingested Bidmove file
+                    row = await conn.fetchrow("""
+                        SELECT COUNT(*) as total_records,
+                               MIN(settlementdate) as earliest_date,
+                               MAX(settlementdate) as latest_date,
+                               COUNT(DISTINCT settlementdate) as days_with_data
+                        FROM bid_day_offer
                     """)
                     table_stats.append({
                         'table': table,
