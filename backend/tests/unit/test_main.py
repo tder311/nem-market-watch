@@ -1372,3 +1372,35 @@ class TestBidBandEndpoints:
                 assert "Search error" in response.json()["detail"]
         finally:
             main_module.db = original_db
+
+
+class TestMetricsSummaryNemDay:
+    """Summary lookbacks end on the last complete NEM (AEST) day, not the server-local day."""
+
+    @pytest.mark.asyncio
+    async def test_24h_window_is_nem_yesterday_on_utc_server(self):
+        import app.main as main_module
+        from datetime import date, timezone
+
+        class FrozenDatetime(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return datetime(2025, 3, 1, 15, 0, tzinfo=timezone.utc).astimezone(tz)
+
+        mock_db = MagicMock()
+        mock_db.get_metrics_summary = AsyncMock(return_value={'baseload_price': 1.0})
+        original_db = main_module.db
+        main_module.db = mock_db
+
+        try:
+            with patch('app.main.datetime', FrozenDatetime):
+                async with httpx.AsyncClient(
+                    transport=httpx.ASGITransport(app=app),
+                    base_url="http://test"
+                ) as client:
+                    response = await client.get("/api/metrics/summary?region=NSW")
+            assert response.status_code == 200
+            _, start, end = mock_db.get_metrics_summary.call_args_list[0].args
+            assert start == end == date(2025, 3, 1)
+        finally:
+            main_module.db = original_db

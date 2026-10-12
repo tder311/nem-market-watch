@@ -8,7 +8,7 @@ from typing import Optional
 import os
 import logging
 
-from .database import NEMDatabase, calculate_aggregation_minutes, to_aest_isoformat
+from .database import AEST, NEMDatabase, calculate_aggregation_minutes, to_aest_isoformat
 from .models import (
     DispatchDataResponse,
     GenerationByFuelResponse,
@@ -305,8 +305,8 @@ async def get_metrics_summary(
         raise HTTPException(status_code=400, detail=f"Invalid region. Must be one of: {', '.join(valid_regions)}")
 
     try:
-        from datetime import date, timedelta
-        end = date.today() - timedelta(days=1)  # yesterday (most recent complete day)
+        from datetime import timedelta
+        end = datetime.now(AEST).date() - timedelta(days=1)  # NEM yesterday (most recent complete day)
         lookbacks = {
             '24h': 1,
             '7d': 7,
